@@ -5,4 +5,4 @@ Created on 14.12.2012
 '''
 
 if __name__ == '__main__':
-    print("Hello world")
+    print([i for i in range(3,7000)])
