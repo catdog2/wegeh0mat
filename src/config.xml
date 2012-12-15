@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<global>
+		<connections>
+			<connection jid="wegeh0mat@tuxzone.org">
+				<option name="password">wegeh0mat</option>
+			</connection>
+		</connections>
+	</global>
+	<plugins>
+		<plugin module="muc_echo_plugin" class="MucEchoPlugin">
+			<instance connection="wegeh0mat@tuxzone.org">
+				<option name="room">test@conference.tuxzone.org</option>
+			</instance>
+		</plugin>
+	</plugins>
+</config>
