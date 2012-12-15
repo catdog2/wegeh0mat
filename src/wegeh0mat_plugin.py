@@ -1,6 +1,11 @@
+import logging
 
 class Wegeh0MatPlugin(object):
+    '''
+    Base class for plugins
+    '''
     
-    def __init__(self, pluginConfig: 'dict with config options' , botClient : 'the BotClient instance to use'):
+    def __init__(self, config: 'dict with config options' , botClient : 'the BotClient instance to use'):
+        logging.getLogger().info("loading plugin: %s",self.__class__.__name__)
         self._botClient = botClient 
-        self._pluginConfig = pluginConfig
+        self._config = config

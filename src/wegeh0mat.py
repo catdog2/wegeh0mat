@@ -3,7 +3,6 @@ import sys
 import logging
 from bot_client import BotClient
 from wegeh0mat_plugin import Wegeh0MatPlugin
-from plugin_manager import PluginManager
 from confparser import ConfigParser
 
 if __name__ == '__main__':
@@ -13,16 +12,6 @@ if __name__ == '__main__':
     optp.add_option('-d', '--debug' , help='set logging to DEBUG', action='store_const', dest='loglevel')
     
     opts, args = optp.parse_args()
-    
-    if opts.jid is None:
-        opts.jid = 'wegeh0mat@tuxzone.org'
-    if opts.password is None:
-        opts.password = 'wegeh0mat'
-    if opts.plugins is None:
-        opts.plugins = 'test_plugin.TestPlugin,echo_plugin.EchoPlugin'
-        
-
-
     
     logging.basicConfig(level="DEBUG", format='%(levelname)-8s %(message)s')
     
@@ -37,7 +26,7 @@ if __name__ == '__main__':
         botClientlist.append(bc)
         
         if(bc.connect()):
-            bc.process(block=True)
+            bc.process()
         else:
             print('can\'t connect!')
 

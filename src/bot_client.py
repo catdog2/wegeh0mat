@@ -40,7 +40,7 @@ class BotClient(sleekxmpp.ClientXMPP):
         
         self.add_event_handler('session_start', self.start)
         #self.add_event_handler("muc::%s::got_online" % self.room, self.muc_online)
-        self.add_event_handler('groupchat_subject' , self.muc_subject)
+        #self.add_event_handler('groupchat_subject' , self.muc_subject)
         
     def muc_online(self, presence):
         if presence['muc']['nick'] != self.nick:
@@ -55,9 +55,6 @@ class BotClient(sleekxmpp.ClientXMPP):
     def start(self, event):
         self.send_presence()
         self.get_roster()
-        
-        #self.plugin['xep_0045'].joinMUC(self.room, self.nick, wait=True)
-        
         
         
 '''Here we will create out echo bot class'''

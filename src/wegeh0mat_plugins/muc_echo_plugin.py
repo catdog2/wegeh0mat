@@ -5,16 +5,20 @@ class MucEchoPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
 
     
     def muc_message(self, msg):
-        if msg['mucnick'] != self.botClient.nick and self.botClient.nick in msg['body']:
+        if msg['mucnick'] != self._config['nick'] and \
+         self._config['nick'] in msg['body'] and  \
+         msg['from'].bare == self._config['room']:
             self.botClient.send_message(mto=msg['from'].bare, mbody='Hey you ' + 
-                              msg['mucnick'] + ' it semms you said: ' + msg['body'], mtype='groupchat')
+                              msg['mucnick'] + ' it seems you said: ' + msg['body'], mtype='groupchat')
     
+    
+    def start(self, event):
+        self._botClient.plugin['xep_0045'].joinMUC(self._config['room'], self._config['nick'], wait=True)    
     
     def __init__(self, config: 'dict with config options' , botClient : 'the BotClient instance to use'):
-        super(EchoPlugin, self).__init__(config, botClient)
+        super(MucEchoPlugin, self).__init__(config, botClient)
         self.botClient = botClient
         
-        print(config)
-        
+        self._botClient.add_event_handler('session_start', self.start)
         botClient.add_event_handler('groupchat_message', self.muc_message)
     
