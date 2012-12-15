@@ -18,6 +18,7 @@ if __name__ == '__main__':
 
     config = ConfigParser("config.xml")
     concfgs = config.get_connection_config_list()
+    workers = config.init_worker_instances()
     
     botClientlist = []
     for c in concfgs:
@@ -25,24 +26,12 @@ if __name__ == '__main__':
         config.init_plugin_instances(bc) # init plugins
         botClientlist.append(bc)
         
+        ## register subscribe workers
+        for w in workers:
+            bc.add_command_subscriber(w.handle_command)
+        
         if(bc.connect()):
             bc.process()
         else:
             print('can\'t connect!')
 
-    
-    """
-    xmpp = BotClient(opts.jid, opts.password, "test@conference.tuxzone.org", "wegeh0mat")
-    
-    pluginManager = PluginManager(xmpp)
-    plugins = [i.split(".") for i in opts.plugins.split(",")]
-    for i in plugins:
-        pluginManager.add_plugin( class_for_name("wegeh0mat_plugins." + i[0], i[1]))
-    
-    '''Finally, we connect the bot and start listening for messages'''
-    
-    if(xmpp.connect()):
-        xmpp.process(block=True)
-    else:
-        print('can\'t connect!')
-    """

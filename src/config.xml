@@ -8,15 +8,16 @@
 		</connections>
 	</global>
 	<plugins>
-		<plugin module="muc_echo_plugin" class="MucEchoPlugin">
-			<instance connection="wegeh0mat@tuxzone.org">
+		<plugin package="wegeh0mat_plugins" module="muc_plugin" class="MucPlugin">
+			<instance jid="wegeh0mat@tuxzone.org">
 				<option name="room">test@conference.tuxzone.org</option>
-				<option name="nick">wegeh0mat</option>
-			</instance>
-			<instance connection="wegeh0mat@tuxzone.org">
-				<option name="room">geektalk@conference.jabber.exados.com</option>
 				<option name="nick">wegeh0mat</option>
 			</instance>
 		</plugin>
 	</plugins>
+	<workers>
+		<worker package="wegeh0mat_workers" module="weggeh_core_worker" class="WeggehWorker" >
+			<option name="foo">bar</option>
+		</worker>
+	</workers>
 </config>

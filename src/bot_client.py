@@ -22,6 +22,13 @@ class BotClient(sleekxmpp.ClientXMPP):
     def loaded_plugins(self):
         return list(self.__loaded_plugins)
     
+    def post_message(self, to, message):
+        return
+    
+    def add_command_subscriber(self, function):
+        for i in self.__loaded_plugins:
+            i.add_command_subscriber(function)
+    
     def muc_subject(self, msg):
          self.send_message(mto=msg['from'].bare, mbody=str(msg['from']), mtype='groupchat')
     

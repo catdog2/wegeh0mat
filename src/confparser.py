@@ -5,7 +5,7 @@ class ConfigParser(object):
     def __init__(self, filename):
         self.__dom = parse(filename)  # parse an XML file by name
 
-    def __class_for_name(self,module_name, class_name):
+    def __class_for_name(self, module_name, class_name):
         # load the module, will raise ImportError if module cannot be loaded
         m = importlib.import_module(module_name)
         # get the class, will raise AttributeError if class cannot be found
@@ -37,14 +37,38 @@ class ConfigParser(object):
         
         for plugin in pluginlist:
             for instance in plugin.getElementsByTagName("instance"):
-                c = self.__class_for_name('wegeh0mat_plugins.' + plugin.attributes['module'].value,
-                                           plugin.attributes['class'].value)
+                c = self.__class_for_name(plugin.attributes['package'].value + '.' + 
+                                          plugin.attributes['module'].value,
+                                          plugin.attributes['class'].value)
                                            
                 
-                if(botClient.boundjid.bare == instance.attributes['connection'].value):
+                if(botClient.boundjid.bare == instance.attributes['jid'].value):
                     opts = {}
                     for opt in instance.getElementsByTagName("option"):
                          opts[opt.attributes['name'].value] = opt.firstChild.nodeValue
                     
                     botClient.load_plugin(opts, c)
+                    
+    def init_worker_instances(self):
+        config = self.__dom.getElementsByTagName("config")[0]
+        workers = config.getElementsByTagName("workers")[0]
+        workerlist = workers.getElementsByTagName("worker")
+        
+        workerret = []
+        
+        for worker in workerlist:
+            w = self.__class_for_name(worker.attributes['package'].value + '.' + 
+                                          worker.attributes['module'].value,
+                                          worker.attributes['class'].value)
+             
+            opts = {}
+            for opt in worker.getElementsByTagName("option"):
+                opts[opt.attributes['name'].value] = opt.firstChild.nodeValue
+                    
+                workerret.append(w(opts))
+        
+        return workerret
+             
+        
+        
             
