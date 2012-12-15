@@ -19,7 +19,7 @@ class MucPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
             
             print(msg)
              
-            self._notfiy_command_subscribers(datadict)
+            self._notfiy_command_subscribers(origin, datadict)
     
     
     def start(self, event):

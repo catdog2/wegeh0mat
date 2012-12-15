@@ -8,5 +8,10 @@ class Worker(object):
         self._config = config
         
     @abc.abstractmethod
-    def handle_command(self, datadict):
+    def handle_command(self, origin ,datadict):
+        '''
+        returns response or None if no response
+        
+        :param datadict:
+        '''
         return

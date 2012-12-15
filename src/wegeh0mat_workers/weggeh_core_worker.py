@@ -5,5 +5,5 @@ class WeggehWorker(worker.Worker):
     def __init__(self, config):
         super(WeggehWorker, self).__init__(config)
         
-    def handle_command(self, datadict):
+    def handle_command(self, origin, datadict):
         return

@@ -23,6 +23,6 @@ class Wegeh0MatPlugin(object):
         
         self._command_subscribers.append(function)
     
-    def _notfiy_command_subscribers(self, datadict):
+    def _notfiy_command_subscribers(self, origin, datadict):
         for i in self._command_subscribers:
-            i(datadict)
+            i(origin, datadict)
