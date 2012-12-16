@@ -8,7 +8,8 @@ class MucPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
         nick = self._config['nick']
         
         if msg['mucnick'] != nick \
-         and msg['body'].strip().startswith(nick):
+         and msg['body'].strip().startswith(nick)\
+         and msg['from'].bare == self._config['room']:
             self._notfiy_command_subscribers(self, msg, msg['body'].replace(nick, '').lstrip(' :,'), msg['mucnick'], None)
             
         
