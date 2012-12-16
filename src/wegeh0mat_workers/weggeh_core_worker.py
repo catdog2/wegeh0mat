@@ -3,6 +3,7 @@ import logging
 import util
 import sqlite3
 import datetime
+import re
 from datetime import date
 
 class WeggehWorker(worker.Worker):
@@ -19,17 +20,34 @@ class WeggehWorker(worker.Worker):
         #c.close()
         
     def handle_command(self, origin, msg : dict, command : str, sendername : str, senderjid: str):
-        if(util.starts_with_one_of(command.lower(), 'hilfe')):
+        if util.starts_with_one_of(command.lower(), 'hilfe'):
             origin.handle_reply(msg, "%s: Dir ist nicht zu helfen!" % sendername)
-        elif(util.starts_with_one_of(command.lower(), 'zeige alle verabredungen im detail')):
+        elif util.starts_with_one_of(command.lower(), 'zeige alle vorschläge im detail'):
             origin.handle_reply(msg, self._get_event_list_str(all=True, details=True))
-        elif(util.starts_with_one_of(command.lower(), 'zeige alle verabredungen')):
+        elif util.starts_with_one_of(command.lower(), 'zeige alle vorschläge'):
             origin.handle_reply(msg, self._get_event_list_str(all=True, details=False))
-        elif(util.starts_with_one_of(command.lower(), 'zeige verabredungen im detail')):
+        elif util.starts_with_one_of(command.lower(), 'zeige vorschläge im detail'):
             origin.handle_reply(msg, self._get_event_list_str(all=False, details=True))
-        elif(util.starts_with_one_of(command.lower(), 'zeige verabredungen')):
+        elif util.starts_with_one_of(command.lower(), 'zeige vorschläge'):
             origin.handle_reply(msg, self._get_event_list_str(all=False, details=False))
-        #elif()
+        elif util.starts_with_one_of(command.lower(), 'vorschlag'):
+      
+            try:
+                p = re.compile('.*vorschlag\s+(.*)\s+am\s+(.*)')
+                match = p.match(command)
+                
+                date = datetime.datetime.strptime(match.groups()[1], "%d.%m.%Y um %H:%M")
+                self._handle_vorschlag(match.groups()[0],date)
+            except Exception as e:
+                logging.getLogger().debug("unable to parse vorschlag: %s" % str(e))
+                return    
+
+
+    def _handle_vorschlag(self, name, date):
+        print(name)
+        print(date)
+        
+        
             
     def _get_event_list_str(self, all : bool, details: bool):
         c = self._db_connection.cursor()
@@ -44,7 +62,7 @@ class WeggehWorker(worker.Worker):
                       " or e.begin_date >= ?" , (now,now))
         
         
-        rs = 'vorhandene Verabredungen:\n'
+        rs = 'vorhandene Vorschläge:\n'
         result = c.fetchall()
         description = c.description
         c.close()
