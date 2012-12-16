@@ -140,8 +140,13 @@ class WeggehWorker(worker.Worker):
             
         else:
             userid = nameresult[0]
-            c.execute("update participants set status='invited' " + 
+            
+            c.execute("select * from participants where event_id = ? and people_id = ?", (eventid, userid))
+            if(c.fetchone() == None):
+                c.execute("update participants set status='invited' " + 
                       " where event_id=? and people_id=?", (eventid , userid))
+            else:
+                return "%s steht schon auf der Teilnehmerliste von vorschlag #%d!" % (username, eventid)
         
         self._db_connection.commit()
         c.close()
@@ -202,7 +207,7 @@ class WeggehWorker(worker.Worker):
         
         c.execute("select id from people where nickname = ? or jid = ?", (sendername, senderjid))
         nameresult = c.fetchone()
-        userid = -1        
+        userid = -1
         
         if nameresult == None:            
             c = self._db_connection.cursor()
@@ -215,8 +220,13 @@ class WeggehWorker(worker.Worker):
             
         else:
             userid = nameresult[0]
-            c.execute("update participants set status=? " + 
-                      " where event_id=? and people_id=?", (status, eventid , userid))
+            c.execute("select * from participants where event_id = ? and people_id = ?", (eventid, userid))
+            if(c.fetchone() == None):
+                c.execute("insert into participants (event_id, people_id, status)" + 
+                      "values(?,?,?)", (eventid , userid, status)) 
+            else:            
+                c.execute("update participants set status=? " + 
+                          " where event_id=? and people_id=?", (status, eventid , userid))
             
 
         self._db_connection.commit()
