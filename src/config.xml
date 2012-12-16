@@ -18,6 +18,7 @@
 	<workers>
 		<worker package="wegeh0mat_workers" module="weggeh_core_worker" class="WeggehWorker" >
 			<option name="foo">bar</option>
+			<option name="sqlite">../database.sqlite3</option>
 		</worker>
 	</workers>
 </config>

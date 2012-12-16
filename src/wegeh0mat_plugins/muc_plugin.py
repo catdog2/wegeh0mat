@@ -4,22 +4,17 @@ from  bot_client import BotClient
 class MucPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
 
     
-    def muc_message(self, msg):
-        if msg['mucnick'] != self._config['nick'] and \
-             self._config['nick'] in msg['body'] and  \
-             msg['from'].bare == self._config['room']:
-             
-            #   self.botClient.send_message(mto=msg['from'].bare, mbody='Hey you ' + 
-            #                     msg['mucnick'] + ' it seems you said: ' + msg['body'], mtype='groupchat')
+    def muc_command(self, msg):
+        nick = self._config['nick']
+        
+        if msg['mucnick'] != nick \
+         and msg['body'].strip().startswith(nick):
+            self._notfiy_command_subscribers(self, msg, msg['body'].replace(nick, '').lstrip(' :,'), msg['mucnick'], None)
             
-            datadict = {}
-            datadict['from'] = msg['from'].bare
-            datadict['mucnick'] = msg['mucnick']
-            datadict['message'] = msg['body']
-            
-            print(msg)
-             
-            self._notfiy_command_subscribers(origin, datadict)
+        
+    def handle_reply(self, origmsg, message):
+        self._botClient.send_message(mto=origmsg['from'].bare,
+                          mbody=message, mtype='groupchat')
     
     
     def start(self, event):
@@ -30,5 +25,5 @@ class MucPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
         self.botClient = botClient
         
         self._botClient.add_event_handler('session_start', self.start)
-        botClient.add_event_handler('groupchat_message', self.muc_message)
+        botClient.add_event_handler('groupchat_message', self.muc_command)
     

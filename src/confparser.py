@@ -65,7 +65,7 @@ class ConfigParser(object):
             for opt in worker.getElementsByTagName("option"):
                 opts[opt.attributes['name'].value] = opt.firstChild.nodeValue
                     
-                workerret.append(w(opts))
+            workerret.append(w(opts))
         
         return workerret
              

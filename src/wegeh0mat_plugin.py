@@ -1,5 +1,6 @@
 import logging
 import abc
+import threading
 
 class Wegeh0MatPlugin(object):
     '''
@@ -9,10 +10,10 @@ class Wegeh0MatPlugin(object):
     __metaclass__ = abc.ABCMeta
     
     def __init__(self, config: 'dict with config options' , botClient : 'the BotClient instance to use'):
-        logging.getLogger().info("loading plugin: %s",self.__class__.__name__)
+        logging.getLogger().info("loading plugin: %s", self.__class__.__name__)
         self._botClient = botClient 
         self._config = config
-        self._command_subscribers = []
+        self._message_subscribers = []
     
     def add_command_subscriber(self, function):
         '''
@@ -21,8 +22,12 @@ class Wegeh0MatPlugin(object):
         :param function: function to be called on notify
         '''
         
-        self._command_subscribers.append(function)
+        self._message_subscribers.append(function)
     
-    def _notfiy_command_subscribers(self, origin, datadict):
-        for i in self._command_subscribers:
-            i(origin, datadict)
+    def _notfiy_command_subscribers(self, origin, msg, command, sendername :str, senderjid: str):
+        for i in self._message_subscribers:
+            i(origin, msg, command, sendername, senderjid)
+
+    @abc.abstractclassmethod
+    def handle_reply(self, origmsg, message):
+        pass
