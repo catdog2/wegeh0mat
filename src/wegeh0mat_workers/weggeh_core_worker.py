@@ -11,20 +11,22 @@ participant_status_to_text = {"yes" : "Ja", "maybe" : "Vielleicht", "no" : "Nein
 class WeggehWorker(worker.Worker):
     def __init__(self, config):
         super(WeggehWorker, self).__init__(config)
+        self._init_db()
         
+    def _init_db(self):
         self._db_connection = sqlite3.connect(self._config['sqlite'],
                                               check_same_thread=False,
                                               detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-        # now = datetime.datetime.now()
-        # c = self._db_connection.cursor()
-        # c.execute("insert into event values(2, 'moo', ?, ?, 'bar', null, 'cip', ?)", (now,now,now))
-        # self._db_connection.commit()
-        # c.close()
         
-
-    
-    
-    
+        """ Init db if empty """ 
+        c = self._db_connection.cursor()
+        c.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
+        alltables = c.fetchall()
+        if(len(alltables) == 0):
+            with open("../wegeh0matschema.sql") as file:
+                c.executescript(file.read())
+        self._db_connection.commit()
+        c.close()
     
     def handle_command(self, origin, msg : dict, command : str, sendername : str, senderjid: str):
         if util.starts_with_one_of(command.lower(), 'hilfe', '?'):
@@ -133,7 +135,10 @@ class WeggehWorker(worker.Worker):
             c = self._db_connection.cursor()
             c.execute("select max(id) from people")
             maxresult = c.fetchone()
-            userid = maxresult[0] + 1
+            if maxresult != None:
+                userid = maxresult[0] + 1
+            else:
+                userid = 0
             c.execute("insert  into people (id,nickname,jid) values(?,?,null)", (userid, username))
             c.execute("insert into participants (event_id, people_id, status)" + 
                       "values(?,?,'invited')", (eventid , userid)) 
@@ -159,7 +164,7 @@ class WeggehWorker(worker.Worker):
         m += "zeige alle vorschläge\n"
         m += "zeige vorschläge im detail\n"
         m += "zeige vorschläge\n"
-        m += "neuer vorschlag <name> am <monat.jahr> um <stunde:minute>\n"
+        m += "neuer vorschlag <name> am <tag.monat.jahr> um <stunde:minute>\n"
         m += "setze status in vorschlag <#vorschlag> auf <ja|nein|vielleicht>\n"
         m += "setze kommentar in vorschlag <#vorschlag> auf <kommentar>\n"
         m += "setze name von vorschlag <#vorschlag> auf <neuer name>\n"
@@ -213,7 +218,10 @@ class WeggehWorker(worker.Worker):
             c = self._db_connection.cursor()
             c.execute("select max(id) from people")
             maxresult = c.fetchone()
-            userid = maxresult[0] + 1
+            if maxresult != None:
+                userid = maxresult[0] + 1
+            else:
+                userid = 0
             c.execute("insert  into people (id,nickname,jid) values(?,?,?)", (userid, sendername, senderjid))
             c.execute("insert into participants (event_id, people_id, status)" + 
                       "values(?,?,?)", (eventid , userid, status)) 
@@ -245,7 +253,10 @@ class WeggehWorker(worker.Worker):
             c = self._db_connection.cursor()
             c.execute("select max(id) from people")
             maxresult = c.fetchone()
-            creatorid = maxresult[0] + 1
+            if maxresult == None:
+                creatorid = maxresult[0] + 1
+            else:
+                creatorid = 0 
             c.execute("insert  into people (id,nickname,jid) values(?,?,?)", (creatorid, sendername, senderjid))
             
         else:
@@ -254,17 +265,21 @@ class WeggehWorker(worker.Worker):
         now = datetime.datetime.now()
         c.execute("select max(id) + 1 from event")
         maxresult = c.fetchone()
+        if maxresult == None:
+            eventnext = maxresult[0] + 1
+        else:
+            eventnext = 0 
         
         c.execute("insert into event (id, name, begin_date, create_date, creator) " + 
-                      "values(?, ?,?,?,?)", (maxresult[0], name, date, now, creatorid))
+                      "values(?, ?,?,?,?)", (eventnext, name, date, now, creatorid))
         c.execute("insert into participants (event_id, people_id, status)" + 
-                  "values(?,?,'yes')", (maxresult[0], creatorid))
+                  "values(?,?,'yes')", (eventnext, creatorid))
         
         self._db_connection.commit()
         
         c.close() 
         
-        return "Vorschlag #%d erstellt!" % maxresult[0]        
+        return "Vorschlag #%d erstellt!" % eventnext        
             
     def _get_event_list_str(self, all : bool, details: bool):
         c = self._db_connection.cursor()
