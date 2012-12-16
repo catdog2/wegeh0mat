@@ -2,7 +2,6 @@ import wegeh0mat_plugin
 from  bot_client import BotClient
 
 class MucPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
-
     
     def muc_command(self, msg):
         nick = self._config['nick']
@@ -23,8 +22,7 @@ class MucPlugin(wegeh0mat_plugin.Wegeh0MatPlugin):
     
     def __init__(self, config: 'dict with config options' , botClient : 'the BotClient instance to use'):
         super(MucPlugin, self).__init__(config, botClient)
-        self.botClient = botClient
-        
+
         self._botClient.add_event_handler('session_start', self.start)
         botClient.add_event_handler('groupchat_message', self.muc_command)
     

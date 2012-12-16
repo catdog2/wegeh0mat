@@ -13,14 +13,21 @@
 				<option name="room">test@conference.tuxzone.org</option>
 				<option name="nick">wegeh0mat</option>
 			</instance>
-<!-- 			<instance jid="wegeh0mat@tuxzone.org"> -->
-<!-- 				<option name="room">geektalk@conference.jabber.exados.com</option> -->
-<!-- 				<option name="nick">wegeh0mat</option> -->
-<!-- 			</instance> -->
+			<!-- <instance jid="wegeh0mat@tuxzone.org"> -->
+			<!-- <option name="room">geektalk@conference.jabber.exados.com</option> -->
+			<!-- <option name="nick">wegeh0mat</option> -->
+			<!-- </instance> -->
+		</plugin>
+		<plugin package="wegeh0mat_plugins" module="direct_chat_plugin"
+			class="DirectChatPlugin">
+			<instance jid="wegeh0mat@tuxzone.org">
+			</instance>
+
 		</plugin>
 	</plugins>
 	<workers>
-		<worker package="wegeh0mat_workers" module="weggeh_core_worker" class="WeggehWorker" >
+		<worker package="wegeh0mat_workers" module="weggeh_core_worker"
+			class="WeggehWorker">
 			<!-- Database file must not exist, will be created -->
 			<option name="sqlite">../database.sqlite3</option>
 		</worker>
