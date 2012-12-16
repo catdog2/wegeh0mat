@@ -13,11 +13,15 @@
 				<option name="room">test@conference.tuxzone.org</option>
 				<option name="nick">wegeh0mat</option>
 			</instance>
+			<instance jid="wegeh0mat@tuxzone.org">
+				<option name="room">geektalk@conference.jabber.exados.com</option>
+				<option name="nick">wegeh0mat</option>
+			</instance>
 		</plugin>
 	</plugins>
 	<workers>
 		<worker package="wegeh0mat_workers" module="weggeh_core_worker" class="WeggehWorker" >
-			<option name="foo">bar</option>
+			<!-- Database file must not exist, will be created -->
 			<option name="sqlite">../database.sqlite3</option>
 		</worker>
 	</workers>
