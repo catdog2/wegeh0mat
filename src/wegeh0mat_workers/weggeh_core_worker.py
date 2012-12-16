@@ -28,6 +28,9 @@ class WeggehWorker(worker.Worker):
         self._db_connection.commit()
         c.close()
     
+
+    
+    
     def handle_command(self, origin, msg : dict, command : str, sendername : str, senderjid: str):
         if util.starts_with_one_of(command.lower(), 'hilfe', '?'):
             origin.handle_reply(msg, self._get_help_message())
@@ -39,6 +42,16 @@ class WeggehWorker(worker.Worker):
             origin.handle_reply(msg, self._get_event_list_str(all=False, details=True))
         elif util.starts_with_one_of(command.lower(), 'zeige vorschläge'):
             origin.handle_reply(msg, self._get_event_list_str(all=False, details=False))
+        elif util.starts_with_one_of(command.lower(), 'entferne vorschlag'):
+            id = None
+            try:
+                p = re.compile('.*entferne\s+vorschlag\s+([0-9]+)')
+                match = p.match(command.lower())
+                id = int(match.groups()[0])
+            except Exception as e:
+                logging.getLogger().debug("unable to parse entferne vorschlag: %s" % str(e))
+                return            
+            origin.handle_reply(msg, self._handle_remove_event(id))
         elif util.starts_with_one_of(command.lower(), 'einladung an'):
             username = None
             id = None
@@ -121,6 +134,11 @@ class WeggehWorker(worker.Worker):
             
             origin.handle_reply(msg, self._handle_vorschlag(name, date, sendername, senderjid))
             
+    def _handle_remove_event(self, id):
+        c = self._db_connection.cursor()
+        c.execute("delete from event where id = ?", (id,))
+        return "Vorschlag #%d entfernt (wenn er überhaupt da war!)" % id
+    
     def _handle_invite(self, eventid, username):
         c = self._db_connection.cursor()
         c.execute("select id from event where id = ?", (eventid,))
@@ -168,6 +186,7 @@ class WeggehWorker(worker.Worker):
         m += "setze status in vorschlag <#vorschlag> auf <ja|nein|vielleicht>\n"
         m += "setze kommentar in vorschlag <#vorschlag> auf <kommentar>\n"
         m += "setze name von vorschlag <#vorschlag> auf <neuer name>\n"
+        m += "entferne vorschlag <#vorschlag>\n"
         m += "einladung an <nickname> zu vorschlag <#vorschlag>\n"
         return m.rstrip("\n")
         
@@ -320,7 +339,7 @@ class WeggehWorker(worker.Worker):
                 rs += "#" + str(rowdict['id']) + ' ' + rowdict['name'] + ':\n'
                 rs += "\tErsteller: " + str(rowdict['nickname']) + "\n"
                 rs += "\tAnfang: " + begin_str + "\n"
-                rs += "\tEnde: " + end_str + "\n"
+                #rs += "\tEnde: " + end_str + "\n"
                 rs += "\tTreffpunkt: " + str(rowdict['meeting_point']) + "\n"
                 rs += "\tKommentar: " + str(rowdict['comment']) + "\n"
                 rs += "\tTeilnehmerzahl: " + particountstr + "\n"
