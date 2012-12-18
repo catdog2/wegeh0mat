@@ -6,6 +6,7 @@ import logging
 from bot_client import BotClient
 from wegeh0mat_plugin import Wegeh0MatPlugin
 from confparser import ConfigParser
+import time
 
 if __name__ == '__main__':
     
@@ -35,5 +36,9 @@ if __name__ == '__main__':
         if(bc.connect()):
             bc.process()
         else:
-            print('can\'t connect!')
+            print('can\'t connect!'
+        
+    )
 
+while True:
+    time.sleep(60000)
